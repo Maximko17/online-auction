@@ -1,3 +1,4 @@
+"use client";
 import Image, { ImageProps } from "next/image";
 import * as React from "react";
 
@@ -46,11 +47,11 @@ export default function NextImage({
           classNames?.image,
           status === "loading" && cn("animate-pulse", classNames?.blur),
         )}
-        src={src}
+        src={`${process.env.NEXT_PUBLIC_S3_URL}/${src}`}
         width={width}
         height={height}
         alt={alt}
-        onLoadingComplete={() => setStatus("complete")}
+        onLoad={() => setStatus("complete")}
         {...rest}
       />
     </figure>

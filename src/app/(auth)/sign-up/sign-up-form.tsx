@@ -66,9 +66,9 @@ export default function SignUpForm({ email, token }: ISignUpForm) {
     }
     if (res?.status === 400) {
       toast({
-        variant: "success",
-        title: "Некоторые из полей заполнены неправильно",
-        description: "Проверьте правильность введенных данных",
+        variant: "destructive",
+        title: "Проверьте правильность введенных данных!",
+        description: "Некоторые из полей заполнены неверно",
       });
     } else {
       toast({

@@ -18,7 +18,7 @@ export default function ToastApiErrorMessage({ status }: { status: number }) {
           </ToastAction>
         ),
       });
-    } else if (500) {
+    } else if (status === 500) {
       toast({
         variant: "destructive",
         title: "Произошла ошибка на сервере",
@@ -26,5 +26,5 @@ export default function ToastApiErrorMessage({ status }: { status: number }) {
       });
     }
   }, []);
-  return null;
+  return <></>;
 }

@@ -17,6 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { createNewLot } from "@/actions/lots";
+import { useServerAction } from "@/hooks/user-server-action";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const formShema = z.object({
   name: z.string().min(2),
@@ -53,6 +56,9 @@ const formShema = z.object({
 export type NewLotFormFields = z.infer<typeof formShema>;
 
 export default function NewLot() {
+  const [runAction, isRunning] = useServerAction(createNewLot);
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<NewLotFormFields>({
     resolver: zodResolver(formShema),
     defaultValues: {
@@ -77,7 +83,28 @@ export default function NewLot() {
         type: "application/json",
       }),
     );
-    createNewLot(formData);
+
+    const result = await runAction(formData);
+    if (result?.status === 201) {
+      toast({
+        variant: "success",
+        title: "Новый лот создан успешно",
+      });
+      return router.push(`/lots/${result.data!.id}`);
+    }
+    if (result?.status === 400) {
+      toast({
+        variant: "destructive",
+        title: "Проверьте правильность введенных данных!",
+        description: "Некоторые из полей заполнены неверно",
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Произошла ошибка!",
+        description: "Попробуйте еще раз или повторите позже",
+      });
+    }
   }
 
   return (
@@ -186,8 +213,8 @@ export default function NewLot() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="mt-3">
-            Создать
+          <Button disabled={isRunning} type="submit" className="mt-3">
+            {isRunning ? "Идет создание..." : "Создать"}
           </Button>
         </form>
       </Form>

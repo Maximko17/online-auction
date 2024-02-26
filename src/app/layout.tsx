@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/toast/toaster";
+import { Footer } from "@/components/footer";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -29,10 +30,11 @@ export default function RootLayout({
         )}
       >
         <Navbar />
-        <div className="container max-w-7xl mx-auto h-full pt-14">
+        <div className="container max-w-7xl mx-auto h-full min-h-screen pt-14">
           {children}
           <Toaster />
         </div>
+        <Footer />
       </body>
     </html>
   );

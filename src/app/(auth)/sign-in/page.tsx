@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { signIn } from "@/actions/auth";
 import { useServerAction } from "@/hooks/user-server-action";
 import { useToast } from "@/hooks/use-toast";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -39,7 +39,7 @@ export default function SignInForm() {
   });
 
   async function onSubmit(data: SignInFormFields) {
-    var result = await runAction(data);
+    const result = await runAction(data);
     if (result?.status === 200) {
       return router.push("/");
     }

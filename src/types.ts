@@ -9,7 +9,6 @@ export type User = {
 
 export type Lot = {
   id: number;
-
   name: string;
   description: string;
   bidIncrement: number;
@@ -17,13 +16,21 @@ export type Lot = {
   startTime: Date;
   endTime: Date;
   status: Status;
-  lotImages: string[];
+  images: LotImage[];
   seller: User;
 };
 
+type OrderBy = "ASC" | "DESC";
+export type LotListFilters = { sellerId?: number };
+export type LotListOrder = { lotId?: OrderBy };
+
+export type LotImage = {
+  image: string;
+};
+
 export enum Status {
-  REVIEW,
-  NEW,
-  ACTIVE,
-  CLOSED,
+  REVIEW = "REVIEW",
+  NEW = "NEW",
+  ACTIVE = "ACTIVE",
+  CLOSED = "CLOSED",
 }

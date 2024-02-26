@@ -15,35 +15,35 @@ function UserAccountNav({ user }: { user: User }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <UserAvatar
-          className="h-8 w-8"
-          image={user.image}
-          username={user.username}
-        />
+        <UserAvatar className="h-8 w-8" user={user} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-white" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
             {<p className="font-medium">{user.username}</p>}
             {
-              <p className="w-[200px] truncate tex-sm text-zinc-700">
+              <p className="w-[200px] truncate text-sm text-zinc-700">
                 {user.email}
               </p>
             }
           </div>
         </div>
+
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link href={`/user/${user.id}/lots`}>Мои лоты</Link>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href={`/user/${user.id}/lots?page=1&lots=10`}>Ваши лоты</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/lots/new">Создать лот</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href={`/me/lots/tracking`}>Отслеживаемые лоты</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href={`/me/bids`}>Ваши ставки</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/settings">Настройки</Link>
         </DropdownMenuItem>
 
