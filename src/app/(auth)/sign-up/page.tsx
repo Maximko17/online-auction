@@ -28,9 +28,5 @@ export default ({
     redirect("/");
   }
 
-  return (
-    <div className="flex flex-col items-center p-24">
-      <SignUpForm email={decodedToken.sub} token={token} />
-    </div>
-  );
+  return <SignUpForm email={decodedToken.sub} token={token} />;
 };

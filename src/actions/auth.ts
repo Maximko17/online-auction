@@ -2,7 +2,6 @@
 
 import { SignInFormFields } from "@/app/(auth)/sign-in/page";
 import { SignUpFormFields } from "@/app/(auth)/sign-up/sign-up-form";
-import { VerifyEmailFields as VerifyEmailFormFields } from "@/app/(auth)/verify/page";
 import { apiFecth } from "@/lib/fetch";
 import { User } from "@/types";
 import { JwtPayload, jwtDecode } from "jwt-decode";
@@ -10,6 +9,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 type SignInResponseData = { accessToken: string; refreshToken: string };
+type VerifyEmailRequestData = { email: string };
 type SignUpResponseData = SignInResponseData;
 
 const accessTokenCookie = "accessToken";
@@ -75,7 +75,7 @@ export const getAuthUserData = (): User | null => {
 };
 
 export async function signIn(formData: SignInFormFields) {
-  const response = await apiFecth<SignInResponseData>("/api/v1/auth/login", {
+  const res = await apiFecth<SignInResponseData>("/api/v1/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -83,11 +83,11 @@ export async function signIn(formData: SignInFormFields) {
     cache: "no-store",
     body: JSON.stringify({ ...formData }),
   });
-  if (response.data) {
-    const { accessToken, refreshToken } = response.data;
+  if (res.data) {
+    const { accessToken, refreshToken } = res.data;
     setTokenCookies(accessToken, refreshToken);
   }
-  return response;
+  return res;
 }
 
 export async function signUp(formData: SignUpFormFields) {
@@ -96,15 +96,19 @@ export async function signUp(formData: SignUpFormFields) {
     headers: {
       "Content-Type": "application/json",
     },
-    cache: "force-cache",
+    cache: "no-store",
     body: JSON.stringify({ ...formData }),
   });
+  if (res.data) {
+    const { accessToken, refreshToken } = res.data;
+    setTokenCookies(accessToken, refreshToken);
+  }
 
   return res;
 }
 
-export async function verifyEmail(formData: VerifyEmailFormFields) {
-  await apiFecth("/api/v1/auth/verification", {
+export async function verifyEmail(formData: VerifyEmailRequestData) {
+  const res = await apiFecth("/api/v1/auth/verification", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -112,6 +116,8 @@ export async function verifyEmail(formData: VerifyEmailFormFields) {
     cache: "no-store",
     body: JSON.stringify({ ...formData }),
   });
+
+  return res;
 }
 
 export const logout = () => {

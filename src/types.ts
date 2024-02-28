@@ -13,11 +13,20 @@ export type Lot = {
   description: string;
   bidIncrement: number;
   startBid: number;
+  lastBid?: number;
+  totalBids?: number;
   startTime: Date;
   endTime: Date;
   status: Status;
   images: LotImage[];
   seller: User;
+};
+
+export type LotCategory = {
+  id: number;
+  name: string;
+  parentId: LotCategory;
+  childCategories: LotCategory[];
 };
 
 type OrderBy = "ASC" | "DESC";

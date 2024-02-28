@@ -38,7 +38,7 @@ export async function apiFecth<T>(
     const res = await fetch(`${process.env.BACKEND_HOST}${input}`, reqInit);
     return {
       status: res.status,
-      data: res.ok ? ((await res.json()) as T) : null,
+      data: res.ok && res.body ? ((await res.json()) as T) : null,
     };
   } catch (error) {
     return {

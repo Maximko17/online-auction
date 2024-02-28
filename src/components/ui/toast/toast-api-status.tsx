@@ -5,7 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
-export default function ToastApiErrorMessage({ status }: { status: number }) {
+export default function ToastServerApiErrorMessage({
+  status,
+}: {
+  status: number;
+}) {
   const { toast } = useToast();
   useEffect(() => {
     if (status === 401) {

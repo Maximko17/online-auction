@@ -41,7 +41,7 @@ function UserAccountNav({ user }: { user: User }) {
           <Link href={`/me/lots/tracking`}>Отслеживаемые лоты</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={`/me/bids`}>Ваши ставки</Link>
+          <Link href={`/me/bids/lots`}>Ваши ставки</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/settings">Настройки</Link>

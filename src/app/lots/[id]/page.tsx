@@ -1,5 +1,5 @@
 import { getLotData } from "@/actions/lots";
-import ToastApiErrorMessage from "../../../components/ui/toast/toast-api-status";
+import ToastServerApiErrorMessage from "../../../components/ui/toast/toast-api-status";
 import LotImages from "./lot-images";
 import { notFound } from "next/navigation";
 import EventSource from "eventsource";
@@ -16,11 +16,9 @@ import { formatValue } from "react-currency-input-field";
 import LotCountdownTimer from "@/components/countdown-timer";
 import TrackLotButton from "./track-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { log } from "console";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -58,13 +56,13 @@ export default async function Lot({ params }: { params: { id: number } }) {
   }
   const lot = res.data;
 
-  // if (!eventSource) {
+  // if (res.data.) {
   //   createBidEventSource(lot.id);
   // }
 
   return (
     <main className="py-10">
-      <ToastApiErrorMessage status={res.status} />
+      <ToastServerApiErrorMessage status={res.status} />
       <div className="flex">
         <LotImages images={lot.images} />
         <Card className="w-[450px] ml-5 flex flex-col justify-between">
@@ -146,6 +144,9 @@ export default async function Lot({ params }: { params: { id: number } }) {
 
 async function BidsTable({ lotId }: { lotId: number }) {
   const res = await getLotBids(lotId);
+  if (!res.data?.length) {
+    return <p className="py-3 px-4">Ставок пока нет</p>;
+  }
   const authUser = getAuthUserData();
   return (
     <div className="relative w-full overflow-auto max-h-[500px]">

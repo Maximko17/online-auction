@@ -60,23 +60,21 @@ export default function BidForm({ lotId, lastBid, bidIncrement }: INewBidForm) {
 
   async function onSubmit({ bid }: BidFormFields) {
     const res = await runAction({ bid, lotId });
-    if (res?.status === 200) {
-      return toast({ variant: "success", title: "Ваша ставка принята!" });
-    }
-    if (res?.status === 401) {
-      return toast({
+    if (res?.status === 201) {
+      toast({ variant: "success", title: "Ваша ставка принята!" });
+    } else if (res?.status === 401) {
+      toast({
         variant: "destructive",
         title: "Сессия истекла!",
         description: "Перезагрузите страницу",
       });
-    }
-    if (res?.status === 400) {
-      return toast({
+    } else if (res?.status === 400) {
+      toast({
         variant: "destructive",
         title: "Проверьте правильность введенной ставки!",
       });
     } else {
-      return toast({
+      toast({
         variant: "destructive",
         title: "Ставка не принята!",
         description: "Попробуйте еще раз или повторите позже",
