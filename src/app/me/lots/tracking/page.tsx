@@ -1,6 +1,9 @@
 import { getTrackingLots } from "@/actions/users";
+import Breadcrumb from "@/components/breadcrumb";
+import { Icons } from "@/components/icons";
 import { LotCard } from "@/components/lot-card";
 import LotListPagination from "@/components/lot-pagination";
+import { SidebarFilters } from "@/components/sidebar-filters";
 import ToastServerApiErrorMessage from "@/components/ui/toast/toast-api-status";
 
 interface IUserTrackingLots {
@@ -34,9 +37,13 @@ export default async function UserTrackingLots({
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden">
-      {/* <Sidebar /> */}
-      <main>
+    <main>
+      <Breadcrumb
+        headIcon={<Icons.user className="w-4 h-4 mr-2" />}
+        sections={[{ name: "Мой профиль" }, { name: "Отслеживаемые лоты" }]}
+      />
+      <div className="flex flex-1 overflow-hidden">
+        <SidebarFilters />
         <div className="space-y-6 p-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 py-4">
             {res.data.content.map((lot) => {
@@ -49,7 +56,7 @@ export default async function UserTrackingLots({
             url={url}
           />
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

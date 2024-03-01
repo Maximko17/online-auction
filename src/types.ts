@@ -18,8 +18,9 @@ export type Lot = {
   startTime: Date;
   endTime: Date;
   status: Status;
-  images: LotImage[];
+  images: string[];
   seller: User;
+  isTracking: boolean;
 };
 
 export type LotCategory = {
@@ -32,10 +33,6 @@ export type LotCategory = {
 type OrderBy = "ASC" | "DESC";
 export type LotListFilters = { sellerId?: number };
 export type LotListOrder = { lotId?: OrderBy };
-
-export type LotImage = {
-  image: string;
-};
 
 export enum Status {
   REVIEW = "REVIEW",

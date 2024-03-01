@@ -1,5 +1,5 @@
 "use server";
-import { apiAuthFecth, apiFecth } from "@/lib/fetch";
+import { apiAuthFetch, apiOptionalAuthFetch } from "@/lib/fetch";
 import { Lot, LotListFilters, LotListOrder } from "@/types";
 
 type NewLotResponseData = { id: number };
@@ -13,9 +13,13 @@ type GetLotsListResponseData = {
   content: Lot[];
   totalPages: number;
 };
+type ToggleTrackLotRequestData = {
+  lotId: number;
+  isTracking: boolean;
+};
 
 export async function createNewLot(data: FormData) {
-  const res = await apiAuthFecth<NewLotResponseData>("/api/v1/lots/new", {
+  const res = await apiAuthFetch<NewLotResponseData>("/api/v1/lots/new", {
     method: "POST",
     cache: "no-store",
     body: data,
@@ -24,7 +28,7 @@ export async function createNewLot(data: FormData) {
 }
 
 export async function getLotData(lotId: number) {
-  const res = await apiFecth<Lot>(`/api/v1/lots/${lotId}`, {
+  const res = await apiOptionalAuthFetch<Lot>(`/api/v1/lots/${lotId}`, {
     method: "GET",
     cache: "no-store",
   });
@@ -32,22 +36,28 @@ export async function getLotData(lotId: number) {
 }
 
 export async function getLotList(reqData: GetLotsListRequestData) {
-  const res = await apiFecth<GetLotsListResponseData>(`/api/v1/lots`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const res = await apiOptionalAuthFetch<GetLotsListResponseData>(
+    `/api/v1/lots`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+      body: JSON.stringify({ ...reqData }),
     },
-    cache: "no-store",
-    body: JSON.stringify({ ...reqData }),
-  });
+  );
   return res;
 }
 
-export async function trackLot(lotId: number) {
-  const res = await apiAuthFecth<GetLotsListResponseData>(
+export async function toggleTrackLot({
+  lotId,
+  isTracking,
+}: ToggleTrackLotRequestData) {
+  const res = await apiAuthFetch<GetLotsListResponseData>(
     `/api/v1/lots/${lotId}/track`,
     {
-      method: "POST",
+      method: isTracking ? "DELETE" : "POST",
       headers: {
         "Content-Type": "application/json",
       },

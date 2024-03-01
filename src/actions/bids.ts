@@ -1,5 +1,5 @@
 "use server";
-import { apiAuthFecth, apiFecth } from "@/lib/fetch";
+import { apiAuthFetch, apiFetch } from "@/lib/fetch";
 import { User } from "@/types";
 
 type CreateNewBidRequestData = {
@@ -19,7 +19,7 @@ type GetLotBidsResponseData = {
 };
 
 export async function createNewBid(reqData: CreateNewBidRequestData) {
-  const res = await apiAuthFecth<CreateNewBidResponseData>(
+  const res = await apiAuthFetch<CreateNewBidResponseData>(
     `/api/v1/lots/${reqData.lotId}/bids/new`,
     {
       method: "POST",
@@ -34,7 +34,7 @@ export async function createNewBid(reqData: CreateNewBidRequestData) {
 }
 
 export async function getLotBids(lotId: number) {
-  const res = await apiFecth<GetLotBidsResponseData[]>(
+  const res = await apiFetch<GetLotBidsResponseData[]>(
     `/api/v1/lots/${lotId}/bids`,
     {
       method: "GET",

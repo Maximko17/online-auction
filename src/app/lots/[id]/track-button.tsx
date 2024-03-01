@@ -1,9 +1,10 @@
 "use client";
-import { trackLot } from "@/actions/lots";
+import { toggleTrackLot } from "@/actions/lots";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useServerAction } from "@/hooks/user-server-action";
-import { Check, Loader2, Plus } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface ITrackLotButton {
   lotId: number;
@@ -11,15 +12,21 @@ interface ITrackLotButton {
 }
 
 export default function TrackLotButton({ lotId, isTracking }: ITrackLotButton) {
+  const [isTracked, setIsTracked] = useState(isTracking);
+  const [runAction, isRunning] = useServerAction(toggleTrackLot);
   const { toast } = useToast();
-  const [runAction, isRunning] = useServerAction(trackLot);
 
-  const startLotTracking = async () => {
-    const res = await runAction(lotId);
-    if (res?.status === 200) {
-      toast({ variant: "success", title: "Лот добавлен в отслеживаемые!" });
-    }
-    if (res?.status === 401) {
+  const toggleTracking = async () => {
+    const res = await runAction({ lotId, isTracking: isTracked });
+    if (res?.status === 204) {
+      setIsTracked(!isTracked);
+      toast({
+        variant: "success",
+        title: isTracked
+          ? "Лот удален из отслеживаемых."
+          : "Лот добавлен в отслеживаемые.",
+      });
+    } else if (res?.status === 401) {
       return toast({
         variant: "destructive",
         title: "Сессия истекла!",
@@ -42,25 +49,24 @@ export default function TrackLotButton({ lotId, isTracking }: ITrackLotButton) {
           <span>Загрузка...</span>
         </>
       );
-    } else if (isTracking) {
+    } else if (isTracked) {
       return (
         <>
           <Check className="mr-1 w-5 h-5" />
           <span>Лот отслеживается</span>
         </>
       );
-    }
-    if (isTracking) {
+    } else {
       return <span>Отслеживать лот</span>;
     }
   };
 
   return (
     <Button
-      onClick={startLotTracking}
+      onClick={toggleTracking}
       disabled={isRunning}
       type="submit"
-      variant={isTracking ? "success" : "default"}
+      variant={isTracked ? "success" : "default"}
       className={"w-full mt-[15px]"}
     >
       {getButtonText()}

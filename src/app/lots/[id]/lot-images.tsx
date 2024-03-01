@@ -13,7 +13,7 @@ interface ILotImages {
 const imageByIndex = (
   index: number,
   images: Lot["images"],
-): Lot["images"][number]["image"] => images[index % images.length].image;
+): Lot["images"][number] => images[index % images.length];
 
 export default function LotImages({ images }: ILotImages) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -58,7 +58,7 @@ export default function LotImages({ images }: ILotImages) {
                   i,
                   images,
                 )}`}
-                alt={images[0].image}
+                alt={images[0]}
               />
             </div>
           ))}
@@ -74,7 +74,7 @@ export default function LotImages({ images }: ILotImages) {
                 onClick={() => onThumbClick(i)}
                 selected={i === selectedIndex}
                 index={i}
-                imgSrc={`${process.env.NEXT_PUBLIC_S3_URL}/${image.image}`}
+                imgSrc={`${process.env.NEXT_PUBLIC_S3_URL}/${image}`}
               />
             ))}
           </div>

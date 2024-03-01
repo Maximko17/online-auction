@@ -1,4 +1,4 @@
-import { apiAuthFecth } from "@/lib/fetch";
+import { apiAuthFetch } from "@/lib/fetch";
 import { Lot, LotListFilters, LotListOrder } from "@/types";
 
 type GetTrackingLotsListRequestData = {
@@ -13,7 +13,7 @@ type GetLotsListResponseData = {
 };
 
 export async function getTrackingLots(reqData: GetTrackingLotsListRequestData) {
-  const res = await apiAuthFecth<GetLotsListResponseData>(
+  const res = await apiAuthFetch<GetLotsListResponseData>(
     `/api/v1/users/me/lots/tracking`,
     {
       method: "POST",
@@ -28,7 +28,7 @@ export async function getTrackingLots(reqData: GetTrackingLotsListRequestData) {
 }
 
 export async function getBidsLots(reqData: GetTrackingLotsListRequestData) {
-  const res = await apiAuthFecth<GetLotsListResponseData>(
+  const res = await apiAuthFetch<GetLotsListResponseData>(
     `/api/v1/users/me/bids/lots`,
     {
       method: "POST",

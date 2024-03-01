@@ -12,7 +12,7 @@ export type ApiFetchErrorResponse = {
   };
 };
 
-export async function apiAuthFecth<T>(
+export async function apiAuthFetch<T>(
   input: string | URL | globalThis.Request,
   reqOptions: RequestInit,
 ): ApiFetchResponse<T> {
@@ -27,10 +27,22 @@ export async function apiAuthFecth<T>(
     ...reqOptions.headers,
     Authorization: `Bearer ${accessToken}`,
   };
-  return apiFecth(input, reqOptions);
+  return apiFetch(input, reqOptions);
 }
 
-export async function apiFecth<T>(
+export async function apiOptionalAuthFetch<T>(
+  input: string | URL | globalThis.Request,
+  reqOptions: RequestInit,
+): ApiFetchResponse<T> {
+  const accessToken = getAccessToken();
+  reqOptions.headers = {
+    ...reqOptions.headers,
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+  };
+  return apiFetch(input, reqOptions);
+}
+
+export async function apiFetch<T>(
   input: string | URL | globalThis.Request,
   reqInit: RequestInit,
 ): ApiFetchResponse<T> {

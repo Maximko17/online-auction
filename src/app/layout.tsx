@@ -25,12 +25,12 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "h-full min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
         )}
       >
         <Navbar />
-        <div className="container max-w-7xl mx-auto h-full min-h-screen pt-14">
+        <div className="container max-w-7xl mx-auto  pt-14">
           {children}
           <Toaster />
         </div>

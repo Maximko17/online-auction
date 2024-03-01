@@ -2,7 +2,7 @@
 
 import { SignInFormFields } from "@/app/(auth)/sign-in/page";
 import { SignUpFormFields } from "@/app/(auth)/sign-up/sign-up-form";
-import { apiFecth } from "@/lib/fetch";
+import { apiFetch } from "@/lib/fetch";
 import { User } from "@/types";
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
@@ -75,7 +75,7 @@ export const getAuthUserData = (): User | null => {
 };
 
 export async function signIn(formData: SignInFormFields) {
-  const res = await apiFecth<SignInResponseData>("/api/v1/auth/login", {
+  const res = await apiFetch<SignInResponseData>("/api/v1/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export async function signIn(formData: SignInFormFields) {
 }
 
 export async function signUp(formData: SignUpFormFields) {
-  const res = await apiFecth<SignUpResponseData>("/api/v1/auth/register", {
+  const res = await apiFetch<SignUpResponseData>("/api/v1/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -108,7 +108,7 @@ export async function signUp(formData: SignUpFormFields) {
 }
 
 export async function verifyEmail(formData: VerifyEmailRequestData) {
-  const res = await apiFecth("/api/v1/auth/verification", {
+  const res = await apiFetch("/api/v1/auth/verification", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -28,23 +28,28 @@ import { getLotBids } from "@/actions/bids";
 import UserAvatar from "@/components/user-avatar";
 import { getAuthUserData } from "@/actions/auth";
 import { cn } from "@/lib/utils";
-import { Status } from "@/types";
+import { Lot, Status } from "@/types";
+import { log } from "console";
 
 let eventSource: EventSource;
 
-const createBidEventSource = (lotId: number) => {
-  const eventSource = new EventSource(
-    `${process.env.BACKEND_HOST}/api/v1/lots/${lotId}/bids-stream`,
+const createBidEventSource = (lot: Lot) => {
+  eventSource = new EventSource(
+    `${process.env.BACKEND_HOST}/api/v1/lots/${lot.id}/bids-stream`,
   );
   eventSource.onmessage = (e) => {
     const response = JSON.parse(e.data);
     console.log(response);
   };
   eventSource.onopen = (e) => {
-    console.log(`Connection to lot ${lotId} opened`);
+    console.log(`Connection to lot ${lot.id} opened`);
   };
   eventSource.onerror = (e) => {
-    console.log(`Connection to lot ${lotId} closed`);
+    log(e);
+    console.log(`Connection to lot ${lot.id} closed`);
+    // if (isLotClosed()) {
+    eventSource.close();
+    // }
   };
   return eventSource;
 };
@@ -56,9 +61,9 @@ export default async function Lot({ params }: { params: { id: number } }) {
   }
   const lot = res.data;
 
-  // if (res.data.) {
-  //   createBidEventSource(lot.id);
-  // }
+  if (lot && lot.status === Status.ACTIVE) {
+    // createBidEventSource(lot);
+  }
 
   return (
     <main className="py-10">
@@ -94,14 +99,14 @@ export default async function Lot({ params }: { params: { id: number } }) {
                 <span>Последняя ставка</span>
                 <span>
                   {formatValue({
-                    value: `${lot.bidIncrement}`,
+                    value: `${lot.lastBid || ""}`,
                     intlConfig: { locale: "ru-RU", currency: "RUB" },
                   })}
                 </span>
               </li>
               <li>
                 <span>Всего ставок</span>
-                <span>20</span>
+                <span>{lot.totalBids}</span>
               </li>
             </ul>
             {lot.status !== Status.CLOSED && (
@@ -118,7 +123,7 @@ export default async function Lot({ params }: { params: { id: number } }) {
               startTime={lot.startTime}
               endTime={lot.endTime}
             />
-            <TrackLotButton lotId={lot.id} isTracking={true} />
+            <TrackLotButton lotId={lot.id} isTracking={lot.isTracking} />
           </CardFooter>
         </Card>
       </div>
