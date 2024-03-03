@@ -1,9 +1,8 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { editLot } from "@/actions/lots";
 import { Button } from "@/components/ui/button";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker-demo";
 import {
   Form,
@@ -15,16 +14,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CurrencyInput } from "@/components/ui/currency-input";
-import { createNewLot } from "@/actions/lots";
-import { useServerAction } from "@/hooks/user-server-action";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import CategorySelect from "./category-selector";
-import { LotCategory } from "@/types";
+import { useServerAction } from "@/hooks/user-server-action";
+import { Lot, LotCategory } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import CategorySelect from "../../app/lots/new/category-selector";
+import Link from "next/link";
 
 interface ICreateLotForm {
   categoriesTree: LotCategory[];
+  initLotData: Lot;
 }
 
 const formShema = z.object({
@@ -45,15 +47,7 @@ const formShema = z.object({
     .or(z.string())
     .pipe(z.coerce.number().positive().finite()),
   images: z
-    .array(
-      z
-        .instanceof(File)
-        .refine(
-          (file) => file.size < 10 * 1024 * 1024,
-          "File size must be less than 10MB",
-        ),
-    )
-    .min(1, "At least 1 file is required")
+    .array(z.instanceof(File))
     .refine(
       (files) => files.every((file) => file.size < 10 * 1024 * 1024),
       "File size must be less than 10MB",
@@ -62,19 +56,22 @@ const formShema = z.object({
 
 export type NewLotFormFields = z.infer<typeof formShema>;
 
-export default function CreateLotForm({ categoriesTree }: ICreateLotForm) {
-  const [runAction, isRunning] = useServerAction(createNewLot);
+export default function EditLotForm({
+  categoriesTree,
+  initLotData,
+}: ICreateLotForm) {
+  const [runAction, isRunning] = useServerAction(editLot);
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<NewLotFormFields>({
     resolver: zodResolver(formShema),
     defaultValues: {
-      name: "",
-      description: "",
-      //   startTime: new Date(),
-      //   endTime: new Date(),
-      startBid: 100.0,
-      bidIncrement: 10.0,
+      name: initLotData.name,
+      description: initLotData.description,
+      startTime: new Date(initLotData.startTime),
+      endTime: new Date(initLotData.endTime),
+      startBid: initLotData.startBid,
+      bidIncrement: initLotData.bidIncrement,
       images: [],
     },
   });
@@ -91,20 +88,13 @@ export default function CreateLotForm({ categoriesTree }: ICreateLotForm) {
       }),
     );
 
-    const result = await runAction(formData);
-    if (result?.status === 201) {
+    const result = await runAction({ id: initLotData.id, data: formData });
+    if (result?.status === 204) {
       toast({
         variant: "success",
-        title: "Новый лот создан успешно",
+        title: "Лот успешно обновлен!",
       });
-      return router.push(`/lots/${result.data!.id}`);
-    }
-    if (result?.status === 400) {
-      toast({
-        variant: "destructive",
-        title: "Проверьте правильность введенных данных!",
-        description: "Некоторые из полей заполнены неверно",
-      });
+      return router.push(`/lots/${initLotData.id}`);
     } else {
       toast({
         variant: "destructive",
@@ -122,7 +112,7 @@ export default function CreateLotForm({ categoriesTree }: ICreateLotForm) {
           className="flex flex-col gap-4"
         >
           <h5 className="text-xl font-medium text-gray-900 text-center">
-            Создание лота
+            Редактирование лота
           </h5>
           <CategorySelect categoriesTree={categoriesTree} />
           <FormField
@@ -224,9 +214,17 @@ export default function CreateLotForm({ categoriesTree }: ICreateLotForm) {
               </FormItem>
             )}
           />
-          <Button disabled={isRunning} type="submit" className="mt-3">
-            {isRunning ? "Идет создание..." : "Создать"}
-          </Button>
+          <div className="flex mt-3 items-center ">
+            <Button disabled={isRunning} type="submit" className="flex-1 mr-2">
+              {isRunning ? "Идет обновление..." : "Обновить"}
+            </Button>
+            <Link
+              href={`/lots/${initLotData.id}`}
+              className="flex-1 py-2 px-4 bg-primary text-primary-foreground shadow hover:bg-primary/90 text-center font-medium rounded-md text-sm transition-colors"
+            >
+              Отмена
+            </Link>
+          </div>
         </form>
       </Form>
     </div>

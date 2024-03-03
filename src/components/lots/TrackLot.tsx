@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useServerAction } from "@/hooks/user-server-action";
 import { Check, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface ITrackLotButton {
@@ -12,6 +13,8 @@ interface ITrackLotButton {
 }
 
 export default function TrackLotButton({ lotId, isTracking }: ITrackLotButton) {
+  const router = useRouter();
+  const [isDisabled, setIsDisabled] = useState(false);
   const [isTracked, setIsTracked] = useState(isTracking);
   const [runAction, isRunning] = useServerAction(toggleTrackLot);
   const { toast } = useToast();
@@ -27,10 +30,13 @@ export default function TrackLotButton({ lotId, isTracking }: ITrackLotButton) {
           : "Лот добавлен в отслеживаемые.",
       });
     } else if (res?.status === 401) {
-      return toast({
+      router.push("/sign-in");
+    } else if (res?.status === 409) {
+      setIsDisabled(true);
+      toast({
         variant: "destructive",
-        title: "Сессия истекла!",
-        description: "Перезагрузите страницу",
+        title: "Аукцион по лоту завершен!",
+        description: "Вы больше не можете отслеживать этот лот",
       });
     } else {
       toast({
@@ -64,7 +70,7 @@ export default function TrackLotButton({ lotId, isTracking }: ITrackLotButton) {
   return (
     <Button
       onClick={toggleTracking}
-      disabled={isRunning}
+      disabled={isDisabled || isRunning}
       type="submit"
       variant={isTracked ? "success" : "default"}
       className={"w-full mt-[15px]"}

@@ -7,16 +7,16 @@ import { cn } from "@/lib/utils";
 
 type CurrencyInputFieldProps = Omit<CurrencyInputProps, "onValueChange"> & {
   onChange: (value: string | undefined) => void;
+  usePrefix?: boolean;
 };
 
 const CurrencyInput = React.forwardRef<
   HTMLInputElement,
   CurrencyInputFieldProps
->(({ className, onChange, ...props }, ref) => {
+>(({ className, onChange, usePrefix = true, ...props }, ref) => {
   return (
     <CurrencyInputField
-      prefix="₽"
-      //   intlConfig={{ locale: "ru-RU", currency: "RUB" }}
+      {...(usePrefix ? { prefix: "₽" } : {})}
       decimalScale={2}
       decimalsLimit={2}
       decimalSeparator="."

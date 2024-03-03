@@ -24,7 +24,7 @@ export const LotCard = (props: ILotCard) => {
         <Image
           alt="Auction item"
           className="aspect-[3/2] h-64 w-full object-cover"
-          src={`${process.env.NEXT_PUBLIC_S3_URL}/${images[0].image}`}
+          src={`${process.env.NEXT_PUBLIC_S3_URL}/${images[0]}`}
           width="420"
           height="280"
         />

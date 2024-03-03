@@ -1,8 +1,10 @@
 "use server";
 import { apiAuthFetch, apiOptionalAuthFetch } from "@/lib/fetch";
 import { Lot, LotListFilters, LotListOrder } from "@/types";
+import { log } from "console";
 
 type NewLotResponseData = { id: number };
+type EditLotRequestData = { id: number; data: FormData };
 type GetLotsListRequestData = {
   filters: LotListFilters;
   order?: LotListOrder;
@@ -21,6 +23,15 @@ type ToggleTrackLotRequestData = {
 export async function createNewLot(data: FormData) {
   const res = await apiAuthFetch<NewLotResponseData>("/api/v1/lots/new", {
     method: "POST",
+    cache: "no-store",
+    body: data,
+  });
+  return res;
+}
+
+export async function editLot({ id, data }: EditLotRequestData) {
+  const res = await apiAuthFetch<NewLotResponseData>(`/api/v1/lots/${id}`, {
+    method: "PUT",
     cache: "no-store",
     body: data,
   });

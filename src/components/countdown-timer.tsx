@@ -1,12 +1,10 @@
 "use client";
 
 import { toRuDate } from "@/lib/utils";
-import { Lot, Status } from "@/types";
 import { useEffect, useState } from "react";
 import Countdown, { zeroPad } from "react-countdown";
 
 interface ILotCountdownTimer {
-  status: Lot["status"];
   startTime: Date;
   endTime: Date;
 }
@@ -18,6 +16,71 @@ interface ITimerRenderer {
   minutes: number;
   seconds: number;
   completed: boolean;
+}
+
+export default function LotCountdownTimer({
+  startTime,
+  endTime,
+}: ILotCountdownTimer) {
+  const [countdownDate, setCountdownDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const startDate = new Date(startTime);
+    const endDate = new Date(endTime);
+    const nowDate = new Date();
+    if (nowDate < startDate) {
+      setCountdownDate(startDate);
+    } else if (nowDate > startDate && nowDate < endDate) {
+      setCountdownDate(endDate);
+    } else {
+      setCountdownDate(nowDate);
+    }
+  }, []);
+
+  const onCountDownEnd = () => {
+    if (new Date() > new Date(endTime)) {
+      return null;
+    } else {
+      window.location.reload();
+    }
+  };
+
+  const getStatus = () => {
+    const startDate = new Date(startTime);
+    const endDate = new Date(endTime);
+    const nowDate = new Date();
+
+    if (nowDate < startDate) {
+      return "Дата начала аукциона:";
+    } else if (nowDate > startDate && nowDate < endDate) {
+      return "Дата окончания аукциона:";
+    } else {
+      return "Аукцион завершен";
+    }
+  };
+
+  return (
+    <>
+      <ul className="w-full *:flex *:justify-between *:border-b-[1px] *:border-b-slate-200 [&>*:first-child]:pt-0 *:py-3 *:text-sm *:font-medium mb-[5px]">
+        <li>
+          <span>{getStatus()}</span>
+          <span>
+            {countdownDate &&
+              new Date() < new Date(endTime) &&
+              toRuDate(countdownDate)}
+          </span>
+        </li>
+      </ul>
+      {countdownDate && (
+        <Countdown
+          date={countdownDate}
+          renderer={(props) => (
+            <TimerRenderer {...props} onCountDownEnd={onCountDownEnd} />
+          )}
+        />
+      )}
+    </>
+  );
 }
 
 function TimerRenderer({
@@ -63,68 +126,4 @@ function TimerRenderer({
       </div>
     );
   }
-}
-
-export default function LotCountdownTimer({
-  status,
-  startTime,
-  endTime,
-}: ILotCountdownTimer) {
-  // const router = useRouter();
-  const [countdownDate, setCountdownDate] = useState<Date | null>(null);
-
-  useEffect(() => {
-    const startDate = new Date(startTime);
-    const endDate = new Date(endTime);
-    const nowDate = new Date();
-    if (status === Status.NEW) {
-      setCountdownDate(startDate);
-    } else if (status === Status.ACTIVE) {
-      setCountdownDate(endDate);
-    } else {
-      setCountdownDate(nowDate);
-    }
-  }, []);
-
-  const onCountDownEnd = () => {
-    if (status === Status.CLOSED) {
-      return null;
-    } else {
-      window.location.reload();
-    }
-  };
-
-  const getStatus = () => {
-    switch (status) {
-      case Status.NEW:
-        return "Дата начала аукциона:";
-      case Status.ACTIVE:
-        return "Дата окончания аукциона:";
-      case Status.CLOSED:
-        return "Аукцион завершен";
-    }
-  };
-
-  return (
-    <>
-      <ul className="w-full *:flex *:justify-between *:border-b-[1px] *:border-b-slate-200 [&>*:first-child]:pt-0 *:py-3 *:text-sm *:font-medium mb-[5px]">
-        <li>
-          <span>{getStatus()}</span>
-          <span>
-            {countdownDate &&
-              status !== Status.CLOSED &&
-              toRuDate(countdownDate)}
-          </span>
-        </li>
-      </ul>
-      {countdownDate && (
-        <Countdown
-          date={countdownDate}
-          renderer={(props) => (
-            <TimerRenderer {...props} onCountDownEnd={onCountDownEnd} />
-          )}
-        />
-      )}
-    </>
-  );
 }

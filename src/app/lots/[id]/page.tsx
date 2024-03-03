@@ -11,10 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import BidForm from "./bid-form";
+import BidForm from "../../../components/lots/BidForm";
 import { formatValue } from "react-currency-input-field";
 import LotCountdownTimer from "@/components/countdown-timer";
-import TrackLotButton from "./track-button";
+import TrackLotButton from "../../../components/lots/TrackLot";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -30,6 +30,7 @@ import { getAuthUserData } from "@/actions/auth";
 import { cn } from "@/lib/utils";
 import { Lot, Status } from "@/types";
 import { log } from "console";
+import Link from "next/link";
 
 let eventSource: EventSource;
 
@@ -55,19 +56,36 @@ const createBidEventSource = (lot: Lot) => {
 };
 
 export default async function Lot({ params }: { params: { id: number } }) {
-  const res = await getLotData(params.id);
-  if (!res.data) {
+  const { data: lot } = await getLotData(params.id);
+  if (!lot) {
     return notFound();
   }
-  const lot = res.data;
-
-  if (lot && lot.status === Status.ACTIVE) {
+  if (lot.status === Status.ACTIVE) {
     // createBidEventSource(lot);
   }
+  const authUser = getAuthUserData();
+
+  const canEdit = () => {
+    return (
+      lot.seller.id === authUser?.id &&
+      (lot.status === Status.NEW || lot.status === Status.REVIEW)
+    );
+  };
+
+  const canBid = () => {
+    return lot.status === Status.ACTIVE && lot.seller.id !== authUser?.id;
+  };
+
+  const canTrack = () => {
+    return (
+      lot.isTracking ||
+      (lot.status !== Status.CLOSED && lot.seller.id !== authUser?.id)
+    );
+  };
 
   return (
     <main className="py-10">
-      <ToastServerApiErrorMessage status={res.status} />
+      {/* <ToastServerApiErrorMessage status={lot.status} /> */}
       <div className="flex">
         <LotImages images={lot.images} />
         <Card className="w-[450px] ml-5 flex flex-col justify-between">
@@ -98,18 +116,20 @@ export default async function Lot({ params }: { params: { id: number } }) {
               <li>
                 <span>Последняя ставка</span>
                 <span>
-                  {formatValue({
-                    value: `${lot.lastBid || ""}`,
-                    intlConfig: { locale: "ru-RU", currency: "RUB" },
-                  })}
+                  {lot.lastBid
+                    ? formatValue({
+                        value: `${lot.lastBid}`,
+                        intlConfig: { locale: "ru-RU", currency: "RUB" },
+                      })
+                    : "-"}
                 </span>
               </li>
               <li>
                 <span>Всего ставок</span>
-                <span>{lot.totalBids}</span>
+                <span>{lot.totalBids || "-"}</span>
               </li>
             </ul>
-            {lot.status !== Status.CLOSED && (
+            {canBid() && (
               <BidForm
                 bidIncrement={lot.bidIncrement}
                 lastBid={lot.startBid}
@@ -119,11 +139,20 @@ export default async function Lot({ params }: { params: { id: number } }) {
           </CardContent>
           <CardFooter className="flex flex-col items-start">
             <LotCountdownTimer
-              status={lot.status}
               startTime={lot.startTime}
               endTime={lot.endTime}
             />
-            <TrackLotButton lotId={lot.id} isTracking={lot.isTracking} />
+            {canEdit() && (
+              <Link
+                href={`/lots/${params.id}/edit`}
+                className="w-full text-center mt-[15px] bg-violet-700 text-zinc-100 shadow hover:bg-violet-700/90 py-2 px-5 rounded-md text-sm transition-colors"
+              >
+                Редактировать лот
+              </Link>
+            )}
+            {canTrack() && (
+              <TrackLotButton lotId={lot.id} isTracking={lot.isTracking} />
+            )}
           </CardFooter>
         </Card>
       </div>
@@ -137,10 +166,16 @@ export default async function Lot({ params }: { params: { id: number } }) {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="description">
-          <p className="py-3 px-4">{lot.description}</p>
+          <p className="p-5 text-sm ">{lot.description}</p>
         </TabsContent>
         <TabsContent value="bids">
-          <BidsTable lotId={params.id} />
+          {lot.status !== Status.NEW && lot.status !== Status.REVIEW ? (
+            <BidsTable lotId={params.id} />
+          ) : (
+            <p className="text-sm font-medium text-center p-5">
+              Ставки будут доступны после начала аукциона
+            </p>
+          )}
         </TabsContent>
       </Tabs>
     </main>
