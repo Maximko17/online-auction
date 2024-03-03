@@ -1,7 +1,7 @@
 "use server";
 
 import { SignInFormFields } from "@/app/(auth)/sign-in/page";
-import { SignUpFormFields } from "@/app/(auth)/sign-up/sign-up-form";
+import { SignUpFormFields } from "@/components/auth/SignUpForm";
 import { apiFetch } from "@/lib/fetch";
 import { User } from "@/types";
 import { JwtPayload, jwtDecode } from "jwt-decode";
@@ -9,7 +9,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 type SignInResponseData = { accessToken: string; refreshToken: string };
-type VerifyEmailRequestData = { email: string };
+type EmailRequestData = { email: string };
+type ResetPasswordRequestData = { password: string };
 type SignUpResponseData = SignInResponseData;
 
 const accessTokenCookie = "accessToken";
@@ -107,9 +108,35 @@ export async function signUp(formData: SignUpFormFields) {
   return res;
 }
 
-export async function verifyEmail(formData: VerifyEmailRequestData) {
-  const res = await apiFetch("/api/v1/auth/verification", {
+export async function sendRegisterEmail(formData: EmailRequestData) {
+  const res = await apiFetch("/api/v1/auth/send-register-email", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    body: JSON.stringify({ ...formData }),
+  });
+
+  return res;
+}
+
+export async function sendResetPasswordEmail(formData: EmailRequestData) {
+  const res = await apiFetch("/api/v1/auth/send-reset-password-email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    body: JSON.stringify({ ...formData }),
+  });
+
+  return res;
+}
+
+export async function resetPassword(formData: ResetPasswordRequestData) {
+  const res = await apiFetch("/api/v1/auth/reset-password", {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },

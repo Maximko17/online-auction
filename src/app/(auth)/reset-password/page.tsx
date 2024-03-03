@@ -1,6 +1,6 @@
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import { jwtDecode } from "jwt-decode";
 
-import SignUpForm from "../../../components/auth/SignUpForm";
 import { redirect } from "next/navigation";
 
 export default ({
@@ -28,5 +28,5 @@ export default ({
     redirect("/");
   }
 
-  return <SignUpForm email={decodedToken.sub} token={token} />;
+  return <ResetPasswordForm token={token} />;
 };

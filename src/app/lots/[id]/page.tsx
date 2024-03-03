@@ -1,6 +1,6 @@
 import { getLotData } from "@/actions/lots";
 import ToastServerApiErrorMessage from "../../../components/ui/toast/toast-api-status";
-import LotImages from "./lot-images";
+import LotImages from "../../../components/lots/LotImages";
 import { notFound } from "next/navigation";
 import EventSource from "eventsource";
 import {

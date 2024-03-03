@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { sendResetPasswordEmail } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,40 +16,41 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { sendRegisterEmail } from "@/actions/auth";
-import { useServerAction } from "@/hooks/user-server-action";
 import { useToast } from "@/hooks/use-toast";
+import { useServerAction } from "@/hooks/user-server-action";
 import { useState } from "react";
 
 export const formShema = z.object({
   email: z.string().email(),
 });
 
-export type VerifyEmailFields = z.infer<typeof formShema>;
+export type ForgotPasswordFields = z.infer<typeof formShema>;
 
-export default function VerifyEmail() {
-  const [runAction, isRunning] = useServerAction(sendRegisterEmail);
+export default function ForgotPassword() {
+  const [runAction, isRunning] = useServerAction(sendResetPasswordEmail);
   const [emailSend, setEmailSend] = useState(false);
   const { toast } = useToast();
-  const form = useForm<VerifyEmailFields>({
+  const form = useForm<ForgotPasswordFields>({
     resolver: zodResolver(formShema),
     defaultValues: {
       email: "",
     },
   });
 
-  async function onSubmit(data: VerifyEmailFields) {
+  async function onSubmit(data: ForgotPasswordFields) {
     const res = await runAction(data);
     if (res?.status === 204) {
       toast({
         variant: "success",
-        title: "Сообщение отправлено на указаный адрес!",
+        title: "Сообщение отправлено!",
+        description:
+          "Сообщение о сбросе пароля успешно отправлено на указанный адрес!",
       });
       setEmailSend(true);
-    } else if (res?.status === 400) {
+    } else if (res?.status === 404) {
       toast({
         variant: "destructive",
-        title: "Адрес электронной почты не введен!",
+        title: "Пользователь с таким адресом не найден!",
       });
     } else {
       toast({
@@ -67,7 +69,7 @@ export default function VerifyEmail() {
           className="flex flex-col gap-4"
         >
           <h5 className="text-xl font-medium text-gray-900 text-center">
-            Начало регистрации
+            Забыли пароль?
           </h5>
           <FormField
             control={form.control}
@@ -81,7 +83,7 @@ export default function VerifyEmail() {
                 <FormDescription>
                   {emailSend
                     ? "Письмо отправлено! Проверьте свой адрес электронной почты."
-                    : "Введите ваш адрес электронной почты для дальнейшей регистрации. "}
+                    : "Введите ваш адрес электронной почты для дальнейшего сброса пароля. "}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -92,7 +94,7 @@ export default function VerifyEmail() {
             className="mt-3"
             disabled={emailSend || isRunning || !!form.formState.errors.email}
           >
-            {isRunning ? "Отправка письма..." : "Зарегистрироваться"}
+            {isRunning ? "Отправка письма..." : "Отправить письмо"}
           </Button>
         </form>
       </Form>

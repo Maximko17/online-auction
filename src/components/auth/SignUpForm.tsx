@@ -19,6 +19,11 @@ import { useServerAction } from "@/hooks/user-server-action";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
+interface ISignUpForm {
+  email: string;
+  token: string;
+}
+
 const formShema = z
   .object({
     email: z.string().email(),
@@ -38,11 +43,6 @@ const formShema = z
   );
 
 export type SignUpFormFields = z.infer<typeof formShema>;
-
-interface ISignUpForm {
-  email: string;
-  token: string;
-}
 
 export default function SignUpForm({ email, token }: ISignUpForm) {
   const [runAction, isRunning] = useServerAction(signUp);

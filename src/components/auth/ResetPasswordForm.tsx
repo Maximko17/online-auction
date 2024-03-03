@@ -4,53 +4,66 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { resetPassword } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signIn } from "@/actions/auth";
-import { useServerAction } from "@/hooks/user-server-action";
 import { useToast } from "@/hooks/use-toast";
+import { useServerAction } from "@/hooks/user-server-action";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
+interface IResetPasswordForm {
+  token: string;
+}
 
-export type SignInFormFields = z.infer<typeof formSchema>;
+const formSchema = z
+  .object({
+    password: z.string().min(8),
+    passwordConfirmation: z.string(),
+    token: z.string(),
+  })
+  .refine(
+    (data) => {
+      return data.password === data.passwordConfirmation;
+    },
+    {
+      message: "Пароли не совпадают",
+      path: ["passwordConfirmation"],
+    },
+  );
 
-export default function SignInForm() {
-  const [runAction, isRunning] = useServerAction(signIn);
+export type ResetPasswordFormFields = z.infer<typeof formSchema>;
+
+export default function ResetPasswordForm({ token }: IResetPasswordForm) {
+  const [runAction, isRunning] = useServerAction(resetPassword);
   const { toast } = useToast();
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<ResetPasswordFormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
       password: "",
+      passwordConfirmation: "",
+      token,
     },
   });
 
-  async function onSubmit(data: SignInFormFields) {
+  async function onSubmit(data: ResetPasswordFormFields) {
     const result = await runAction(data);
-    if (result?.status === 200) {
-      return router.push("/");
+    if (result?.status === 204) {
+      toast({ variant: "success", title: "Пароль успешно изменен!" });
+      return router.push("/sign-in");
     } else if (result?.status === 400) {
       toast({
         variant: "destructive",
         title: "Не все поля введены корректно!",
       });
-    } else if (result?.status === 401) {
-      toast({ variant: "destructive", title: "Неверный логин или пароль" });
     } else {
       toast({
         variant: "destructive",
@@ -68,51 +81,37 @@ export default function SignInForm() {
           className="flex flex-col gap-4"
         >
           <h5 className="text-xl font-medium text-gray-900 text-center">
-            Вход на платформу
+            Смена пароля
           </h5>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Адрес электронной почты</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Пароль</FormLabel>
+                <FormLabel>Новый пароль</FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
                 <FormMessage />
-                <FormDescription>
-                  <Link
-                    href={"/forgot-password"}
-                    className="text-blue-700 hover:underline ml-1"
-                  >
-                    Забыли пароль?
-                  </Link>
-                </FormDescription>
               </FormItem>
             )}
           />
-          <Button type="submit" className="mt-3" disabled={isRunning}>
-            {isRunning ? "Загрузка..." : "Войти"}
+          <FormField
+            control={form.control}
+            name="passwordConfirmation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Подтверждение пароля</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button disabled={isRunning} type="submit" className="mt-3">
+            {isRunning ? "Загрузка..." : "Сменить пароль"}
           </Button>
-          <div className="text-sm font-medium text-gray-500 text-center">
-            Не зарегистрированы?{" "}
-            <Link href="/verify" className="text-blue-700 hover:underline ">
-              Создать аккаунт
-            </Link>
-          </div>
         </form>
       </Form>
     </div>
