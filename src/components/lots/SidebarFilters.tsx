@@ -1,18 +1,29 @@
 "use client";
 import React from "react";
-import { Separator } from "./ui/separator";
-import { CurrencyInput } from "./ui/currency-input";
-import { Label } from "./ui/label";
-import { DateTimePicker } from "./ui/date-time-picker/date-time-picker-demo";
+import { CurrencyInput } from "../ui/currency-input";
+import { Label } from "../ui/label";
+import { DateTimePicker } from "../ui/date-time-picker/date-time-picker-demo";
+import { LotCategory } from "@/types";
 
-export const SidebarFilters = () => {
+interface ISidebarFilters {
+  categoryList: LotCategory[];
+}
+
+export const SidebarFilters = ({ categoryList }: ISidebarFilters) => {
   return (
-    <aside className="w-[320px] border-r p-2 pl-5">
-      <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
+    <aside className="w-[320px] p-2 pl-5">
+      <h3 className="mb-2 text-lg font-semibold text-gray-800 ">
         Подкатегории
       </h3>
-      <Separator />
-      <h3 className="pt-2 mb-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
+      {categoryList.map((c) => {
+        return (
+          <ul className="*:border-b *:border-dashed *:py-1">
+            <li>{c.name}</li>
+          </ul>
+        );
+      })}
+      {/* <Separator /> */}
+      <h3 className="pt-2 mb-2 text-lg font-semibold text-gray-800 ">
         Параметры
       </h3>
       <ul className="flex flex-col gap-5 pl-[5px]">
@@ -35,7 +46,7 @@ export const SidebarFilters = () => {
           <Label>Дата аукциона c</Label>
           <DateTimePicker
             className="mt-2"
-            value={new Date()}
+            value={undefined}
             onChange={console.log}
           />
         </li>
@@ -43,7 +54,7 @@ export const SidebarFilters = () => {
           <Label>Дата аукциона по</Label>
           <DateTimePicker
             className="mt-2"
-            value={new Date()}
+            value={undefined}
             onChange={console.log}
           />
         </li>

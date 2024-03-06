@@ -18,7 +18,7 @@ interface ITimerRenderer {
   completed: boolean;
 }
 
-export default function LotCountdownTimer({
+export default function CountdownLotAuction({
   startTime,
   endTime,
 }: ILotCountdownTimer) {
@@ -53,7 +53,7 @@ export default function LotCountdownTimer({
     if (nowDate < startDate) {
       return "Дата начала аукциона:";
     } else if (nowDate > startDate && nowDate < endDate) {
-      return "Дата окончания аукциона:";
+      return "Дата завершения аукциона:";
     } else {
       return "Аукцион завершен";
     }

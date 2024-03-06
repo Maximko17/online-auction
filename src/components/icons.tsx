@@ -1,4 +1,4 @@
-import { LucideProps, User } from "lucide-react";
+import { ChevronRight, Eye, Home, LucideProps, User } from "lucide-react";
 
 export const Icons = {
   user: User,
@@ -34,4 +34,7 @@ export const Icons = {
       ></path>
     </svg>
   ),
+  nextArrow: ChevronRight,
+  track: Eye,
+  home: Home,
 };

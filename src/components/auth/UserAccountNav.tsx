@@ -6,8 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import UserAvatar from "./user-avatar";
+} from "../ui/dropdown-menu";
+import UserAvatar from "../user-avatar";
 import { logout } from "@/actions/auth";
 import { User } from "@/types";
 

@@ -1,8 +1,16 @@
 import { type ClassValue, clsx } from "clsx";
+import { formatValue } from "react-currency-input-field";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function formatToRub(value: number | null) {
+  return formatValue({
+    value: `${value || 0}`,
+    intlConfig: { locale: "ru-RU", currency: "RUB" },
+  });
 }
 
 export function toRuDate(date: Date) {

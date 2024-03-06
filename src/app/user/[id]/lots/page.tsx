@@ -1,5 +1,5 @@
 import { getLotList } from "@/actions/lots";
-import { LotCard } from "@/components/lot-card";
+import { LotCard } from "@/components/lots/LotCard";
 import LotListPagination from "@/components/lot-pagination";
 import { notFound } from "next/navigation";
 

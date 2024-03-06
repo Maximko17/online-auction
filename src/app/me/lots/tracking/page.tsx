@@ -1,9 +1,9 @@
 import { getTrackingLots } from "@/actions/users";
 import Breadcrumb from "@/components/breadcrumb";
 import { Icons } from "@/components/icons";
-import { LotCard } from "@/components/lot-card";
+import { LotCard } from "@/components/lots/LotCard";
 import LotListPagination from "@/components/lot-pagination";
-import { SidebarFilters } from "@/components/sidebar-filters";
+import { SidebarFilters } from "@/components/lots/SidebarFilters";
 import ToastServerApiErrorMessage from "@/components/ui/toast/toast-api-status";
 
 interface IUserTrackingLots {

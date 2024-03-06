@@ -18,7 +18,7 @@ import {
 import { TimePickerDemo } from "./time-picker-demo";
 
 type DateTimePickerProps = CalendarProps & {
-  value: Date;
+  value: Date | undefined;
   onChange: (date: Date | undefined) => void;
 };
 

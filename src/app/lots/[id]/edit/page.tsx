@@ -1,4 +1,4 @@
-import { getCategotiesTree } from "@/actions/categories";
+import { getCategotyTree } from "@/actions/categories";
 import { getLotData } from "@/actions/lots";
 import { notFound, redirect } from "next/navigation";
 import EditLotForm from "../../../../components/lots/EditLotForm";
@@ -18,7 +18,7 @@ export default async function Lot({ params }: { params: { id: number } }) {
     redirect("/");
   }
 
-  const catRes = await getCategotiesTree({
+  const catRes = await getCategotyTree({
     startDepth: 0,
     endDepth: 10,
   });

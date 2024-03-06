@@ -1,5 +1,5 @@
 import { getBidsLots } from "@/actions/users";
-import { LotCard } from "@/components/lot-card";
+import { LotCard } from "@/components/lots/LotCard";
 import LotListPagination from "@/components/lot-pagination";
 import ToastServerApiErrorMessage from "@/components/ui/toast/toast-api-status";
 

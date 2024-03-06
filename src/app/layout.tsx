@@ -30,7 +30,7 @@ export default function RootLayout({
         )}
       >
         <Navbar />
-        <div className="container max-w-7xl mx-auto  pt-14">
+        <div className="container max-w-7xl mx-auto pt-14">
           {children}
           <Toaster />
         </div>

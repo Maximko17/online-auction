@@ -1,9 +1,9 @@
-import { getCategotiesTree } from "@/actions/categories";
+import { getCategotyTree } from "@/actions/categories";
 import CreateLotForm from "./create-lot-form";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const categoriesRes = await getCategotiesTree({
+  const categoriesRes = await getCategotyTree({
     startDepth: 0,
     endDepth: 10,
   });

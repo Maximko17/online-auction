@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/card";
 import BidForm from "../../../components/lots/BidForm";
 import { formatValue } from "react-currency-input-field";
-import LotCountdownTimer from "@/components/countdown-timer";
-import TrackLotButton from "../../../components/lots/TrackLot";
+import CountdownLotAuction from "@/components/lots/CountdownLotAuction";
+import TrackLotButton from "../../../components/lots/TrackLotButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -27,7 +27,7 @@ import {
 import { getLotBids } from "@/actions/bids";
 import UserAvatar from "@/components/user-avatar";
 import { getAuthUserData } from "@/actions/auth";
-import { cn } from "@/lib/utils";
+import { cn, formatToRub } from "@/lib/utils";
 import { Lot, Status } from "@/types";
 import { log } from "console";
 import Link from "next/link";
@@ -79,7 +79,9 @@ export default async function Lot({ params }: { params: { id: number } }) {
   const canTrack = () => {
     return (
       lot.isTracking ||
-      (lot.status !== Status.CLOSED && lot.seller.id !== authUser?.id)
+      (lot.status !== Status.CLOSED &&
+        lot.status !== Status.SOLD &&
+        lot.seller.id !== authUser?.id)
     );
   };
 
@@ -97,32 +99,15 @@ export default async function Lot({ params }: { params: { id: number } }) {
             <ul className="*:flex *:justify-between *:border-b-[1px] *:border-b-slate-200 [&>*:first-child]:pt-0 *:py-3 *:text-sm *:font-medium">
               <li>
                 <span>Начальная цена</span>
-                <span>
-                  {formatValue({
-                    value: `${lot.startBid}`,
-                    intlConfig: { locale: "ru-RU", currency: "RUB" },
-                  })}
-                </span>
+                <span>{formatToRub(lot.startBid)}</span>
               </li>
               <li>
                 <span>Шаг цены</span>
-                <span>
-                  {formatValue({
-                    value: `${lot.bidIncrement}`,
-                    intlConfig: { locale: "ru-RU", currency: "RUB" },
-                  })}
-                </span>
+                <span>{formatToRub(lot.bidIncrement)}</span>
               </li>
               <li>
                 <span>Последняя ставка</span>
-                <span>
-                  {lot.lastBid
-                    ? formatValue({
-                        value: `${lot.lastBid}`,
-                        intlConfig: { locale: "ru-RU", currency: "RUB" },
-                      })
-                    : "-"}
-                </span>
+                <span>{lot.lastBid ? formatToRub(lot.lastBid) : "-"}</span>
               </li>
               <li>
                 <span>Всего ставок</span>
@@ -138,7 +123,7 @@ export default async function Lot({ params }: { params: { id: number } }) {
             )}
           </CardContent>
           <CardFooter className="flex flex-col items-start">
-            <LotCountdownTimer
+            <CountdownLotAuction
               startTime={lot.startTime}
               endTime={lot.endTime}
             />

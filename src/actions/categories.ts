@@ -1,18 +1,10 @@
 "use server";
 import { apiFetch } from "@/lib/fetch";
-import { Lot, LotCategory } from "@/types";
+import { LotCategory } from "@/types";
 
-type GetCategotiesTreeRequestData = {
-  startDepth: number;
-  endDepth: number;
-};
-
-export async function getCategotiesTree({
-  startDepth,
-  endDepth,
-}: GetCategotiesTreeRequestData) {
+export async function getCategotyTree(lotId: number) {
   const res = await apiFetch<LotCategory[]>(
-    `/api/v1/categories/tree?startDepth=${startDepth}&endDepth=${endDepth}`,
+    `/api/v1/categories/${lotId}/tree`,
     {
       method: "GET",
       headers: {
@@ -21,5 +13,16 @@ export async function getCategotiesTree({
       cache: "no-store",
     },
   );
+  return res;
+}
+
+export async function getRootCategories() {
+  const res = await apiFetch<LotCategory[]>(`/api/v1/categories/root`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
   return res;
 }

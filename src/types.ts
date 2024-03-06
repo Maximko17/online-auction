@@ -13,8 +13,8 @@ export type Lot = {
   description: string;
   bidIncrement: number;
   startBid: number;
-  lastBid?: number;
-  totalBids?: number;
+  lastBid: number | null;
+  totalBids: number | null;
   startTime: Date;
   endTime: Date;
   status: Status;
@@ -39,4 +39,5 @@ export enum Status {
   NEW = "NEW",
   ACTIVE = "ACTIVE",
   CLOSED = "CLOSED",
+  SOLD = "SOLD",
 }

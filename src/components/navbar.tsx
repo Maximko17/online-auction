@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Icons } from "./icons";
 import { getAuthUserData } from "@/actions/auth";
 import { buttonVariants } from "./ui/button";
-import UserAccountNav from "./user-account-nav";
+import UserAccountNav from "./auth/UserAccountNav";
 
 function Navbar() {
   const user = getAuthUserData();
